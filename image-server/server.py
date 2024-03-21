@@ -19,7 +19,7 @@ def allowed_file(filename):
 
 @app.route('/endpoints', methods=['GET'])
 def get_endpoints():
-    return {"endpoints": endpoints}
+    return endpoints
 
 
 @app.route('/jimmyinator', methods=['POST'])
