@@ -19,6 +19,7 @@ def allowed_file(filename):
 
 @app.route('/endpoints', methods=['GET'])
 def get_endpoints():
+    print("getting endpoints")
     return endpoints
 
 
@@ -39,7 +40,7 @@ def upload_file():
 
         input = {
             "swap_image": open("./example_jimmyinator/jimmyli.jpeg", 'rb'),
-            "target_image":  open(filepath, 'rb'),
+            "target_image": open(filepath, 'rb'),
         }
 
         print("running jimmy faceswap! ")
