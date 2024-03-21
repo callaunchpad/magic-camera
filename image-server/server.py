@@ -1,6 +1,7 @@
 from flask import Flask, request, send_file
 from werkzeug.utils import secure_filename
 import os
+import replicate
 
 app = Flask(__name__)
 
@@ -9,13 +10,19 @@ UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+endpoints = {"Jimmy-Inator": "jimmyinator"}
 
 # Function to check if an uploaded file has an allowed extension
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/magic', methods=['POST'])
+@app.route('/endpoints', methods=['GET'])
+def get_endpoints():
+    return {"endpoints": endpoints}
+
+
+@app.route('/jimmyinator', methods=['POST'])
 def upload_file():
     # Check if the post request has the file part
     if 'file' not in request.files:
@@ -29,8 +36,19 @@ def upload_file():
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
-        # Here, you can add any processing you need on the saved file
-        return send_file(filepath, mimetype='image/jpeg')
+
+        input = {
+            "swap_image": open("./example_jimmyinator/jimmyli.jpeg", 'rb'),
+            "target_image":  open(filepath, 'rb'),
+        }
+
+        print("running jimmy faceswap! ")
+        output = replicate.run(
+            "lucataco/faceswap:9a4298548422074c3f57258c5d544497314ae4112df80d116f0d2109e843d20d",
+            input=input
+        )
+        return output
+    
     return 'File type not allowed', 400
 
 if __name__ == '__main__':
