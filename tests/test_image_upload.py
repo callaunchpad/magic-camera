@@ -5,7 +5,7 @@ from io import BytesIO
 url = 'http://52.25.237.192:8000/jimmyinator' # any mode api endpoint here
 
 # The path to the file you want to upload
-file_path = 'out/test.jpg'
+file_path = 'out/test.png'
 
 # The key in the response JSON where the image URL is stored
 # This is a placeholder; you'll need to replace it with the actual key
