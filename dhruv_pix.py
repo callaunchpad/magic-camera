@@ -55,7 +55,7 @@ def main(image_path, device="cuda:1"):
     print(prompt)
     # Display or save the result image as needed
     result_image.show()  # This will display the image; you might want to save it instead
-    result_image.save("/home/ubuntu/dhruv/magic-camera/tests")
+    result_image.save("/home/ubuntu/dhruv/magic-camera/tests/result_image.jpg")
     print(f"Result image saved to /home/ubuntu/dhruv/magic-camera/tests")
 
 if __name__ == "__main__":
