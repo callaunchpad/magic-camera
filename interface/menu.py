@@ -1,7 +1,7 @@
-from colorsys import hsv_to_rgb
+import random
 from PIL import ImageFont, ImageDraw
 from typing import Sequence
-import random
+
 
 FNT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
 
