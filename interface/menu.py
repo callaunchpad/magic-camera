@@ -18,6 +18,15 @@ POINTER_HEIGHT = 20
 POINTER_WIDTH = 15
 POINTER_Y_MARGIN = 5
 
+COLORS = [
+    "#0000ff",
+    "#00ffff",
+    "#00ff00",
+    "#ff00ff",
+    "#ffff00",
+    "#ff0000",
+]
+
 class Menu:
 
     def __init__(self, image_draw: ImageDraw, modes: Sequence[str]):
@@ -29,7 +38,7 @@ class Menu:
         self.randomize_color()
 
     def randomize_color(self):
-        self.color = tuple(int(x * 255) for x in hsv_to_rgb(random.random(), 1, 1))
+        self.color = random.choice(COLORS)
 
     def increment_mode(self):
         self.selected = min(self.selected + 1, len(self.modes) - 1)
