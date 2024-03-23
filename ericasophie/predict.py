@@ -26,10 +26,15 @@ class Predictor(BasePredictor):
     ) -> Path:
         """Run a single prediction on the model"""
         inputImage = cv2.imread(str(image))
+        b, g, r = cv2.split(inputImage)
+        inputImage = cv2.merge([r, g, b])
         grayscale_image = cv2.cvtColor(inputImage, cv2.COLOR_BGR2GRAY)
+
 
         #path2 = os.path.join(DATA_PATH, "dinosaurs.jpg")
         target_image = cv2.imread("dinosaurs.jpg")
+        b, g, r = cv2.split(target_image)
+        target_image = cv2.merge([r, g, b])
 
         replacement_background = cv2.resize(target_image, (grayscale_image.shape[1], grayscale_image.shape[0]))
 
