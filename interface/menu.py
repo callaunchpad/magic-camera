@@ -29,12 +29,14 @@ COLORS = [
 
 class Menu:
 
-    def __init__(self, image_draw: ImageDraw, modes: Sequence[str]):
+    def __init__(self, image_draw: ImageDraw, modes: Sequence[str], width: int, height: int):
         assert len(modes) > 0, "must have at least one mode"
         self.image_draw = image_draw
         self.modes = modes
-        self.selected = 0
+        self.width = width
+        self.height = height
 
+        self.selected = 0
         self.randomize_color()
 
     def randomize_color(self):
