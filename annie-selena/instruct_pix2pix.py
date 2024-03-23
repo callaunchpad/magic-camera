@@ -40,6 +40,8 @@ class Predictor(BasePredictor):
                             "make it dark and intense",
                             "change to still art style"])
     output = self.pipe(prompt, image=processed_image, num_inference_steps=num_inference_steps, image_guidance_scale=image_guidance_scale).images
-    new_path = f"./out/{prompt}.jpg"
+    words = prompt.split()  
+    third_word = words[2] if len(words) > 2 else "broken"  
+    new_path = f"./out/{third_word}.jpg"    
     output[0].save(new_path)
     return new_path
