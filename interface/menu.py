@@ -18,6 +18,15 @@ POINTER_HEIGHT = 20
 POINTER_WIDTH = 15
 POINTER_Y_MARGIN = 5
 
+COLORS = [
+    "#0000ff",
+    "#00ffff",
+    "#00ff00",
+    "#ff00ff",
+    "#ffff00",
+    "#ff0000",
+]
+
 class Menu:
 
     def __init__(self, image_draw: ImageDraw, modes: Sequence[str]):

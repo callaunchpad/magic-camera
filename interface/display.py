@@ -8,14 +8,17 @@ from adafruit_rgb_display import st7789
 
 from enum import Enum
 from menu import Menu
-from utils import *
 from viewfinder import Viewfinder
+
+class Screen(Enum):
+    MENU = 0
+    VIEWFINDER = 1
 
 BAUDRATE = 24000000
 
 class Display:
 
-    def __init__(self, modes):
+    def __init__(self, modes, verbose=False):
         cs_pin = DigitalInOut(board.CE0)
         dc_pin = DigitalInOut(board.D25)
         reset_pin = DigitalInOut(board.D24)
@@ -50,6 +53,8 @@ class Display:
         self.menu = Menu(self.image_draw, modes)
         self.viewfinder = Viewfinder(self.image_draw)
 
+        self.verbose = verbose
+
     def setup_buttons(self):
         self.button_A = DigitalInOut(board.D5)
         self.button_A.direction = Direction.INPUT
@@ -74,24 +79,24 @@ class Display:
     
     def read_buttons(self):
         if not self.button_A.value:
-            print("A pressed")
+            if self.verbose: print("A pressed")
+            if self.screen == Screen.VIEWFINDER:
+                self.screen = Screen.MENU
+
+        elif not self.button_B.value:
+            if self.verbose: print("B pressed")
             if self.screen == Screen.MENU:
                 self.screen = Screen.VIEWFINDER
             elif self.screen == Screen.VIEWFINDER:
                 pass # take picture
 
-        elif not self.button_B.value:
-            print("B pressed")
-            if self.screen == Screen.VIEWFINDER:
-                self.screen = Screen.MENU
-
         elif not self.button_U.value:
-            print("U pressed")
+            if self.verbose: print("U pressed")
             if self.screen == Screen.MENU:
                 self.menu.decrement_mode()
 
         elif not self.button_D.value:
-            print("D pressed")
+            if self.verbose: print("D pressed")
             if self.screen == Screen.MENU:
                 self.menu.increment_mode()
 
