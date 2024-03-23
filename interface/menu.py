@@ -19,5 +19,5 @@ class Menu:
         self.mode_id = max(self.mode_id - 1, 0)
 
     def draw(self):
-        self.image_draw.rectangle((10, 10, 230, 50), outline = ITEM_OUTLINE)
+        self.image_draw.rectangle((10, 10, 230, 50), outline=ITEM_OUTLINE)
 
