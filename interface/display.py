@@ -1,23 +1,21 @@
-import time
-import random
-from colorsys import hsv_to_rgb
-import board
-from digitalio import DigitalInOut, Direction
-from PIL import Image, ImageDraw, ImageFont
-from adafruit_rgb_display import st7789
-
-from picamera import PiCamera
 import io
-
+import board
 from enum import Enum
+
+from adafruit_rgb_display import st7789
+from digitalio import DigitalInOut, Direction
+from picamera import PiCamera
+from PIL import Image, ImageDraw, ImageFont
+
 from menu import Menu
-from viewfinder import Viewfinder
+
+
+BAUDRATE = 24000000
 
 class Screen(Enum):
     MENU = 0
     VIEWFINDER = 1
 
-BAUDRATE = 24000000
 
 class Display:
 
@@ -54,7 +52,6 @@ class Display:
 
         self.screen = Screen.MENU
         self.menu = Menu(self.image_draw, modes, self.width, self.height)
-        self.viewfinder = Viewfinder(self.image_draw)
 
         self.verbose = verbose
 
@@ -140,7 +137,3 @@ class Display:
                     stream.truncate()
                 else:
                     return
-
-
-if __name__ == "__main__":
-    display = Display(modes=["mode one", "mode two"])
