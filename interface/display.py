@@ -100,6 +100,7 @@ class Display:
             self.menu.draw()
         else:
             self.viewfinder.draw()
+        self.disp.image(self.image)
 
 
 if __name__ == "__main__":
