@@ -19,13 +19,13 @@ class Predictor(BasePredictor):
 
     def predict(
         self,
-        image: str = Input(description="Input image"),
+        image: Path = Input(description="Input image"),
         scale: float = Input(
             description="Factor to scale image by", ge=0, le=10, default=1.5
         ),
     ) -> Path:
         """Run a single prediction on the model"""
-        inputImage = cv2.imread(image)
+        inputImage = cv2.imread(str(image))
         grayscale_image = cv2.cvtColor(inputImage, cv2.COLOR_BGR2GRAY)
 
         #path2 = os.path.join(DATA_PATH, "dinosaurs.jpg")
