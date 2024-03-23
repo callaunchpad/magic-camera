@@ -6,6 +6,9 @@ from digitalio import DigitalInOut, Direction
 from PIL import Image, ImageDraw, ImageFont
 from adafruit_rgb_display import st7789
 
+from picamera import PiCamera
+import io
+
 from enum import Enum
 from menu import Menu
 from viewfinder import Viewfinder
@@ -101,12 +104,40 @@ class Display:
                 self.menu.increment_mode()
 
     def draw(self):
-        self.image_draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
         if self.screen == Screen.MENU:
             self.menu.draw()
         else:
             self.viewfinder.draw()
         self.disp.image(self.image)
+
+    def run(self):
+        while True:
+            if self.screen == Screen.MENU: self.run_menu()
+            elif self.screen == Screen.VIEWFINDER: self.run_viewfinder()
+
+    def run_menu(self):
+        while True:
+            self.read_buttons()
+            if self.screen == Screen.MENU:
+                self.menu.draw()
+                self.disp.image(self.image)
+            else:
+                return
+            
+    def run_viewfinder(self):
+        stream = io.BytesIO()
+        with PiCamera() as camera:
+            for _ in camera.capture_continuous(stream, format='jpeg'): 
+                self.read_buttons()
+                if self.screen == Screen.VIEWFINDER:
+
+                    camera_img = Image.open(stream)
+                    self.disp.image(camera_img)
+
+                    stream.seek(0)
+                    stream.truncate()
+                else:
+                    return
 
 
 if __name__ == "__main__":
