@@ -53,7 +53,7 @@ class Display:
         self.image_draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
 
         self.screen = Screen.MENU
-        self.menu = Menu(self.image_draw, modes)
+        self.menu = Menu(self.image_draw, modes, self.width, self.height)
         self.viewfinder = Viewfinder(self.image_draw)
 
         self.verbose = verbose
@@ -127,6 +127,8 @@ class Display:
     def run_viewfinder(self):
         stream = io.BytesIO()
         with PiCamera() as camera:
+            camera.framerate = 15
+            camera.resolution = (self.width, self.height)
             for _ in camera.capture_continuous(stream, format='jpeg'): 
                 self.read_buttons()
                 if self.screen == Screen.VIEWFINDER:
