@@ -49,6 +49,7 @@ class Menu:
         self.randomize_color()
 
     def draw(self):
+        self.image_draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
         for i, mode in enumerate(self.modes):
             self.image_draw.text(
                 xy=(LEFT_PADDING + POINTER_WIDTH + ITEM_X_MARGIN, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN)),
