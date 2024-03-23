@@ -1,13 +1,22 @@
+from colorsys import hsv_to_rgb
 from PIL import ImageFont, ImageDraw
 from typing import Sequence
+import random
 
 FNT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
 
 ITEM_OUTLINE = "#FFFFFF"
 
+TOP_PADDING = 15
+LEFT_PADDING = 10
+
 ITEM_HEIGHT = 40
-ITEM_X_MARGIN = 10
-ITEM_Y_MARGIN = 10
+ITEM_X_MARGIN = 15
+ITEM_Y_MARGIN = 5
+
+POINTER_HEIGHT = 20
+POINTER_WIDTH = 15
+POINTER_Y_MARGIN = 5
 
 class Menu:
 
@@ -15,24 +24,35 @@ class Menu:
         assert len(modes) > 0, "must have at least one mode"
         self.image_draw = image_draw
         self.modes = modes
-        self.mode_id = 1
+        self.selected = 0
+
+        self.randomize_color()
+
+    def randomize_color(self):
+        self.color = tuple(int(x * 255) for x in hsv_to_rgb(random.random(), 1, 1))
 
     def increment_mode(self):
-        self.mode_id = min(self.mode_id + 1, len(self.modes))
+        self.selected = min(self.selected + 1, len(self.modes) - 1)
+        self.randomize_color()
 
     def decrement_mode(self):
-        self.mode_id = max(self.mode_id - 1, 0)
+        self.selected = max(self.selected - 1, 0)
+        self.randomize_color()
 
     def draw(self):
         for i, mode in enumerate(self.modes):
-            self.image_draw.rectangle(
-                xy=(ITEM_X_MARGIN, ITEM_Y_MARGIN + i * (ITEM_HEIGHT + ITEM_Y_MARGIN), 240 - ITEM_X_MARGIN, (i+1) * (ITEM_HEIGHT + ITEM_Y_MARGIN)),
-                outline=ITEM_OUTLINE,
-            )
             self.image_draw.text(
-                xy=(ITEM_X_MARGIN + 5, 5 + ITEM_Y_MARGIN + i * (ITEM_HEIGHT + ITEM_Y_MARGIN)),
-                text="Hello World",
+                xy=(LEFT_PADDING + POINTER_WIDTH + ITEM_X_MARGIN, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN)),
+                text=mode,
                 font=FNT,
                 fill="#ffffff",
             )
 
+            if self.selected == i:
+                self.image_draw.polygon(
+                    xy=((LEFT_PADDING, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN) + POINTER_Y_MARGIN),
+                        (LEFT_PADDING, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN) + POINTER_Y_MARGIN + POINTER_HEIGHT),
+                        (LEFT_PADDING + POINTER_WIDTH, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN) + POINTER_Y_MARGIN + POINTER_HEIGHT/2)),
+                    outline="#ffffff",
+                    fill=self.color,
+                )

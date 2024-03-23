@@ -38,13 +38,13 @@ class Display:
 
         self.setup_buttons()
 
-        width = self.disp.width
-        height = self.disp.height
-        self.image = Image.new("RGB", (width, height))
+        self.width = self.disp.width
+        self.height = self.disp.height
+        self.image = Image.new("RGB", (self.width, self.height))
         self.image_draw = ImageDraw.Draw(self.image)
 
         # Draw a black filled box to clear the image.
-        self.image_draw.rectangle((0, 0, width, height), outline=0, fill=0)
+        self.image_draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
 
         self.screen = Screen.MENU
         self.menu = Menu(self.image_draw, modes)
@@ -96,6 +96,7 @@ class Display:
                 self.menu.increment_mode()
 
     def draw(self):
+        self.image_draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
         if self.screen == Screen.MENU:
             self.menu.draw()
         else:
