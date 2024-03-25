@@ -1,12 +1,14 @@
 import io
 import board
 from enum import Enum
+from multiprocessing import Process
 
 from adafruit_rgb_display import st7789
 from digitalio import DigitalInOut, Direction
 from picamera import PiCamera
 from PIL import Image, ImageDraw, ImageFont
 
+from image_processor import ImageProcessor
 from menu import Menu
 
 
@@ -15,6 +17,8 @@ BAUDRATE = 24000000
 class Screen(Enum):
     MENU = 0
     VIEWFINDER = 1
+    LOADING = 2
+    RESULT = 3
 
 
 class Display:
@@ -52,6 +56,7 @@ class Display:
 
         self.screen = Screen.MENU
         self.menu = Menu(self.image_draw, modes, self.width, self.height)
+        self.processor = ImageProcessor(self.image_draw, modes, self.width, self.height)
 
         self.verbose = verbose
 
@@ -82,13 +87,17 @@ class Display:
             if self.verbose: print("A pressed")
             if self.screen == Screen.VIEWFINDER:
                 self.screen = Screen.MENU
+            elif self.screen == Screen.RESULT:
+                self.screen = Screen.VIEWFINDER
 
         elif not self.button_B.value:
             if self.verbose: print("B pressed")
             if self.screen == Screen.MENU:
                 self.screen = Screen.VIEWFINDER
             elif self.screen == Screen.VIEWFINDER:
-                pass # take picture
+                self.screen = Screen.LOADING # take a picture
+            elif self.screen == Screen.RESULT:
+                self.screen = Screen.MENU
 
         elif not self.button_U.value:
             if self.verbose: print("U pressed")
@@ -102,8 +111,14 @@ class Display:
 
     def run(self):
         while True:
-            if self.screen == Screen.MENU: self.run_menu()
-            elif self.screen == Screen.VIEWFINDER: self.run_viewfinder()
+            if self.screen == Screen.MENU:
+                self.run_menu()
+            elif self.screen == Screen.VIEWFINDER:
+                self.run_viewfinder()
+            elif self.screen == Screen.LOADING:
+                self.run_loading()
+            elif self.screen == Screen.RESULT:
+                self.run_result()
 
     def run_menu(self):
         while True:
@@ -122,9 +137,27 @@ class Display:
             for _ in camera.capture_continuous(stream, format='jpeg'): 
                 self.read_buttons()
                 if self.screen == Screen.VIEWFINDER:
-                    camera_img = Image.open(stream)
-                    self.disp.image(camera_img)
+                    self.camera_img = Image.open(stream)
+                    self.disp.image(self.camera_img)
                     stream.seek(0)
                     stream.truncate()
                 else:
                     return
+                
+    def run_loading(self):
+        p1 = Process(target=self.processor.process_image, args=(self.camera_img, self.menu.selected))
+        p1.start()
+        
+        p2 = Process(target=self.processor.animate_loading)
+        p2.start()
+
+        p1.join()
+        self.screen = Screen.RESULT
+
+    def run_result(self):
+        while True:
+            self.read_buttons()
+            if self.screen == Screen.RESULT:
+                self.processor.show_result()
+            else:
+                return
