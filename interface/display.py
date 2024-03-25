@@ -100,13 +100,6 @@ class Display:
             if self.screen == Screen.MENU:
                 self.menu.increment_mode()
 
-    def draw(self):
-        if self.screen == Screen.MENU:
-            self.menu.draw()
-        else:
-            self.viewfinder.draw()
-        self.disp.image(self.image)
-
     def run(self):
         while True:
             if self.screen == Screen.MENU: self.run_menu()
@@ -129,10 +122,8 @@ class Display:
             for _ in camera.capture_continuous(stream, format='jpeg'): 
                 self.read_buttons()
                 if self.screen == Screen.VIEWFINDER:
-
                     camera_img = Image.open(stream)
                     self.disp.image(camera_img)
-
                     stream.seek(0)
                     stream.truncate()
                 else:
