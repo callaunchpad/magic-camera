@@ -136,8 +136,4 @@ class Display:
                     stream.seek(0)
                     stream.truncate()
                 else:
-<<<<<<< HEAD
                     return
-=======
-                    return
->>>>>>> 13717ed (Clean up code)
