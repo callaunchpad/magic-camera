@@ -112,12 +112,16 @@ class Display:
     def run(self):
         while True:
             if self.screen == Screen.MENU:
+                if self.verbose: print("running menu screen")
                 self.run_menu()
             elif self.screen == Screen.VIEWFINDER:
+                if self.verbose: print("running viewfinder screen")
                 self.run_viewfinder()
             elif self.screen == Screen.LOADING:
+                if self.verbose: print("running loading screen")
                 self.run_loading()
             elif self.screen == Screen.RESULT:
+                if self.verbose: print("running result screen")
                 self.run_result()
 
     def run_menu(self):
