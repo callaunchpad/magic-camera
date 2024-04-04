@@ -28,6 +28,8 @@ class Screen(Enum):
 class Display:
 
     def __init__(self, verbose=False):
+        self.verbose = verbose
+
         cs_pin = DigitalInOut(board.CE0)
         dc_pin = DigitalInOut(board.D25)
         reset_pin = DigitalInOut(board.D24)
@@ -57,7 +59,6 @@ class Display:
         self.menu = Menu(self.canvas, mode_names)
         self.processor = ImageProcessor(self.canvas, mode_dict, BASE_URL, verbose=verbose)
         
-        self.verbose = verbose
         self.last_button_press = 0
         self.camera_res = (self.canvas.width, self.canvas.height)
 
@@ -121,9 +122,12 @@ class Display:
     def get_modes(self):
         response = requests.get(BASE_URL + "endpoints")
         if response.status_code == 200:
-            return response.json()
+            modes = response.json()
         else:
-            return {"Jimmy-Inator": "jimmyinator"} # backup mode
+            modes = {"Jimmy-Inator": "jimmyinator"} # backup mode
+        if self.verbose:
+            print(f"loaded modes: {modes}")
+        return modes
 
     def run(self):
         while True:
