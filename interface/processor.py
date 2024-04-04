@@ -50,11 +50,6 @@ class ImageProcessor:
             t += 1
 
     def process_image(self, image: Image, mode_name: str):
-        # save image to a file
-        # load file and send it through pipeline
-        # if pipeline is successful, set self.success to True and put resulting image in self.result
-        # oherwise, set self.success to False and put error message in self.message
-
         time_str = time.strftime("%Y%m%d-%H%M%S")
         path_before = f"out/{time_str}_before.png"
         path_after = f"out/{time_str}_after.png"
@@ -71,8 +66,8 @@ class ImageProcessor:
             if image_url:
                 image_response = requests.get(image_url)
                 if image_response.status_code == 200:
-                    image = Image.open(BytesIO(image_response.content))
-                    image.save(path_after)
+                    self.result_image = Image.open(BytesIO(image_response.content))
+                    self.result_image.save(path_after)
                     self.success = True
                     if self.verbose:
                         print("\tsuccesfully processed image!!")
@@ -90,11 +85,13 @@ class ImageProcessor:
                 print(f"\terror with file upload: {response.status_code}, {response.text}")
         
         if self.verbose:
-            print(f"finished processing after {(time.time() - start_time) / 60} minutes")
+            print(f"\tfinished processing after {(time.time()-start_time)/60:.2f} minutes")
 
     def show_result(self):
         self.canvas.clear_image()
         if self.success:
+            if self.verbose:
+                print(f"\tshowing processed image")
             self.canvas.image_draw.text(
                 xy=(0,0),
                 text="success",
@@ -102,6 +99,8 @@ class ImageProcessor:
                 fill="#ffffff",
             )
         else:
+            if self.verbose:
+                print(f"\tshowing error")
             self.canvas.image_draw.text(
                 xy=(0,0),
                 text="error",
