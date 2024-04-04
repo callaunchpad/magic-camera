@@ -3,17 +3,17 @@ import time
 from itertools import count
 from typing import Sequence
 
-from PIL import Image, ImageDraw
+from PIL import Image
+
+from canvas import Canvas
 
 
 class ImageProcessor:
 
-    def __init__(self, image_draw: ImageDraw, modes: Sequence[str], width: int, height: int):
+    def __init__(self, canvas: Canvas, modes: Sequence[str]):
         assert len(modes) > 0, "must have at least one mode"
-        self.image_draw = image_draw
+        self.canvas = canvas
         self.modes = modes
-        self.width = width
-        self.height = height
 
         # TODO: read animation paths
         self.animation_paths = ["path1"]
@@ -24,7 +24,7 @@ class ImageProcessor:
 
     def animate_loading(self):
         print("LOADING")
-        self.image_draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
+        self.canvas.clear_image()
         animation_path = random.choice(self.animation_paths)
         # TODO: load animation images
         for t in count(0):
@@ -40,7 +40,7 @@ class ImageProcessor:
         time.sleep(5)
 
     def show_result(self):
-        self.image_draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
+        self.canvas.clear_image()
         if self.success:
             # draw resulting image
             pass
