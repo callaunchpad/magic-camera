@@ -1,6 +1,8 @@
 import random
-from PIL import ImageFont, ImageDraw
+from PIL import ImageFont
 from typing import Sequence
+
+from canvas import Canvas
 
 
 FNT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
@@ -29,12 +31,10 @@ COLORS = [
 
 class Menu:
 
-    def __init__(self, image_draw: ImageDraw, modes: Sequence[str], width: int, height: int):
+    def __init__(self, canvas: Canvas, modes: Sequence[str]):
         assert len(modes) > 0, "must have at least one mode"
-        self.image_draw = image_draw
+        self.canvas = canvas
         self.modes = modes
-        self.width = width
-        self.height = height
 
         self.selected = 0
         self.randomize_color()
@@ -51,9 +51,9 @@ class Menu:
         self.randomize_color()
 
     def draw(self):
-        self.image_draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
+        self.canvas.clear_image()
         for i, mode in enumerate(self.modes):
-            self.image_draw.text(
+            self.canvas.image_draw.text(
                 xy=(LEFT_PADDING + POINTER_WIDTH + ITEM_X_MARGIN, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN)),
                 text=mode,
                 font=FNT,
@@ -61,10 +61,11 @@ class Menu:
             )
 
             if self.selected == i:
-                self.image_draw.polygon(
+                self.canvas.image_draw.polygon(
                     xy=((LEFT_PADDING, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN) + POINTER_Y_MARGIN),
                         (LEFT_PADDING, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN) + POINTER_Y_MARGIN + POINTER_HEIGHT),
                         (LEFT_PADDING + POINTER_WIDTH, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN) + POINTER_Y_MARGIN + POINTER_HEIGHT/2)),
                     outline="#ffffff",
                     fill=self.color,
                 )
+        self.canvas.display_image()
