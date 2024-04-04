@@ -35,8 +35,6 @@ class ImageProcessor:
         self.result = None
 
     def animate_loading(self):
-        if self.verbose:
-            print("\tLOADING")
         animation_path = random.choice(self.animation_paths)
         # TODO: load animation images
         self.canvas.clear_image()
@@ -56,13 +54,12 @@ class ImageProcessor:
         # load file and send it through pipeline
         # if pipeline is successful, set self.success to True and put resulting image in self.result
         # oherwise, set self.success to False and put error message in self.message
-        if self.verbose:
-            print("\tPROCESSING YUH")
 
         time_str = time.strftime("%Y%m%d-%H%M%S")
         path_before = f"out/{time_str}_before.png"
         path_after = f"out/{time_str}_after.png"
 
+        start_time = time.time()
         image.save(path_before)
         with open(path_before, "rb") as f:
             files = {"file": f}
@@ -76,17 +73,24 @@ class ImageProcessor:
                 if image_response.status_code == 200:
                     image = Image.open(BytesIO(image_response.content))
                     image.save(path_after)
+                    self.success = True
                     if self.verbose:
-                        print("\tSuccesfully processed image!!")
+                        print("\tsuccesfully processed image!!")
                 else:
+                    self.success = False
                     if self.verbose:
-                        print(f"\tFailed to retrieve image: {image_response.status_code}")
+                        print(f"\tfailed to retrieve image: {image_response.status_code}")
             else:
+                self.success = False
                 if self.verbose:
-                    print("\tImage URL not found in response.")
+                    print("\timage URL not found in response")
         else:
+            self.success = False
             if self.verbose:
-                print(f"\tError with file upload: {response.status_code}, {response.text}")
+                print(f"\terror with file upload: {response.status_code}, {response.text}")
+        
+        if self.verbose:
+            print(f"finished processing after {(time.time() - start_time) / 60} minutes")
 
     def show_result(self):
         self.canvas.clear_image()
