@@ -132,7 +132,7 @@ class Display:
         if self.verbose:
             print(f"loaded modes: {modes}")
         return modes
-
+      
     def run(self):
         while True:
             if self.screen == Screen.MENU:
