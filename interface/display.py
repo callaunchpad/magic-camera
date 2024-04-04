@@ -170,9 +170,10 @@ class Display:
                 
     def run_loading(self):
         # TODO: make sure self.camera_img exists
+        self.processor.set_image_target(self.camera_img)
         p1 = Process(
             target=self.processor.process_image,
-            args=(self.camera_img, self.menu.get_current_mode()),
+            args=(self.menu.get_current_mode(),),
         )
         p1.start()
         
