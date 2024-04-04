@@ -1,4 +1,5 @@
 import io
+import requests
 import time
 from enum import Enum
 from multiprocessing import Process
@@ -15,6 +16,7 @@ from menu import Menu
 
 
 BAUDRATE = 24000000
+BASE_URL = "http://52.25.237.192:8000/"
 
 class Screen(Enum):
     MENU = 0
@@ -25,7 +27,7 @@ class Screen(Enum):
 
 class Display:
 
-    def __init__(self, modes, verbose=False):
+    def __init__(self, verbose=False):
         cs_pin = DigitalInOut(board.CE0)
         dc_pin = DigitalInOut(board.D25)
         reset_pin = DigitalInOut(board.D24)
@@ -49,12 +51,15 @@ class Display:
         self.setup_buttons()
         self.canvas = Canvas(disp)
         self.screen = Screen.MENU
-        self.camera_res = (self.canvas.width, self.canvas.height)
-        self.menu = Menu(self.canvas, modes)
-        self.processor = ImageProcessor(self.canvas, modes, verbose=verbose)
+        
+        mode_dict = self.get_modes()
+        mode_names = list(mode_dict.keys())
+        self.menu = Menu(self.canvas, mode_names)
+        self.processor = ImageProcessor(self.canvas, mode_dict, BASE_URL, verbose=verbose)
         
         self.verbose = verbose
         self.last_button_press = 0
+        self.camera_res = (self.canvas.width, self.canvas.height)
 
     def setup_buttons(self):
         self.button_A = DigitalInOut(board.D5)
@@ -112,6 +117,13 @@ class Display:
             return
 
         self.last_button_press = time.time()
+
+    def get_modes(self):
+        response = requests.get(BASE_URL + "endpoints")
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return {"Jimmy-Inator": "jimmyinator"} # backup mode
 
     def run(self):
         while True:

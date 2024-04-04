@@ -12,10 +12,17 @@ FNT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
 
 class ImageProcessor:
 
-    def __init__(self, canvas: Canvas, modes: Sequence[str], verbose=False):
-        assert len(modes) > 0, "must have at least one mode"
+    def __init__(
+        self,
+        canvas: Canvas,
+        mode_dict: Sequence[str],
+        base_url: str,
+        verbose: bool = False,
+    ):
+        assert len(mode_dict) > 0, "must have at least one mode"
         self.canvas = canvas
-        self.modes = modes
+        self.mode_dict = mode_dict
+        self.base_url = base_url
         self.verbose = verbose
 
         # TODO: read animation paths

@@ -31,10 +31,10 @@ COLORS = [
 
 class Menu:
 
-    def __init__(self, canvas: Canvas, modes: Sequence[str]):
-        assert len(modes) > 0, "must have at least one mode"
+    def __init__(self, canvas: Canvas, mode_names: Sequence[str]):
+        assert len(mode_names) > 0, "must have at least one mode"
         self.canvas = canvas
-        self.modes = modes
+        self.mode_names = mode_names
 
         self.selected = 0
         self.randomize_color()
@@ -43,7 +43,7 @@ class Menu:
         self.color = random.choice(COLORS)
 
     def increment_mode(self):
-        self.selected = min(self.selected + 1, len(self.modes) - 1)
+        self.selected = min(self.selected + 1, len(self.mode_names) - 1)
         self.randomize_color()
 
     def decrement_mode(self):
@@ -52,7 +52,7 @@ class Menu:
 
     def draw(self):
         self.canvas.clear_image()
-        for i, mode in enumerate(self.modes):
+        for i, mode in enumerate(self.mode_names):
             self.canvas.image_draw.text(
                 xy=(LEFT_PADDING + POINTER_WIDTH + ITEM_X_MARGIN, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN)),
                 text=mode,
