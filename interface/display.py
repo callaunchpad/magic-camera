@@ -11,8 +11,8 @@ from picamera import PiCamera
 from PIL import Image, ImageDraw
 
 from canvas import Canvas
-from image_processor import ImageProcessor
 from menu import Menu
+from processor import ImageProcessor
 
 
 BAUDRATE = 24000000
