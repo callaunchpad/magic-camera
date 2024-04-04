@@ -133,7 +133,6 @@ class Display:
             self.read_buttons()
             if self.screen == Screen.MENU:
                 self.menu.draw()
-                self.canvas.display_image(self.image)
             else:
                 return
             

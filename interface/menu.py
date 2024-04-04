@@ -68,3 +68,4 @@ class Menu:
                     outline="#ffffff",
                     fill=self.color,
                 )
+        self.canvas.display_image()
