@@ -25,6 +25,7 @@ class ImageProcessor:
     def animate_loading(self):
         print("LOADING")
         self.canvas.clear_image()
+        self.canvas.display_image()
         animation_path = random.choice(self.animation_paths)
         # TODO: load animation images
         for t in count(0):
@@ -41,6 +42,7 @@ class ImageProcessor:
 
     def show_result(self):
         self.canvas.clear_image()
+        self.canvas.display_image()
         if self.success:
             # draw resulting image
             pass

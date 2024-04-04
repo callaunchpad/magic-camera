@@ -47,9 +47,9 @@ class Display:
         backlight.value = True
 
         self.setup_buttons()
-
         self.canvas = Canvas(disp)
         self.screen = Screen.MENU
+        self.camera_res = (self.canvas.width, self.canvas.height)
         self.menu = Menu(self.canvas, modes)
         self.processor = ImageProcessor(self.canvas, modes)
         
@@ -140,7 +140,8 @@ class Display:
         stream = io.BytesIO()
         with PiCamera() as camera:
             camera.framerate = 15
-            camera.resolution = (self.width, self.height)
+            # camera.resolution = (self.width, self.height)
+            camera.resolution = self.camera_res
             for _ in camera.capture_continuous(stream, format='jpeg'): 
                 self.read_buttons()
                 if self.screen == Screen.VIEWFINDER:

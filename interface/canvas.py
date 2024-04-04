@@ -21,5 +21,3 @@ class Canvas:
     def clear_image(self):
         self.image_draw.rectangle((0, 0, self.width, self.height), outline=0, fill=0)
 
-    def get_image_draw(self):
-        return self.image_draw
