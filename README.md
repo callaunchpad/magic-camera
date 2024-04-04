@@ -2,5 +2,5 @@
 
 To run camera:
 ```python
-    python interface/run_display.py
+python interface/run_display.py
 ```
