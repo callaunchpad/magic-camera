@@ -85,17 +85,8 @@ class ImageProcessor:
         self.canvas.clear_image()
         try:
             result_image = Image.open(self.path_after)
-            if self.verbose:
-                print(f"\tshowing processed image")
-            self.canvas.image_draw.text(
-                xy=(0,0),
-                text="success",
-                font=FNT,
-                fill="#ffffff",
-            )
+            self.canvas.display_image(result_image)
         except:
-            if self.verbose:
-                print(f"\tshowing error")
             self.canvas.image_draw.text(
                 xy=(0,0),
                 text="error",
