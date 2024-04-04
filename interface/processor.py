@@ -35,8 +35,8 @@ class ImageProcessor:
         # TODO: load animation images
         self.canvas.clear_image()
         self.canvas.image_draw.text(
-            xy=(0,0),
-            text="loading",
+            xy=(50,100),
+            text="loading...",
             font=FNT,
             fill="#ffffff",
         )
