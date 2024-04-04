@@ -1,5 +1,6 @@
 import io
 import board
+import time
 from enum import Enum
 from multiprocessing import Process
 
@@ -57,8 +58,9 @@ class Display:
         self.screen = Screen.MENU
         self.menu = Menu(self.image_draw, modes, self.width, self.height)
         self.processor = ImageProcessor(self.image_draw, modes, self.width, self.height)
-
+        
         self.verbose = verbose
+        self.last_button_press = 0
 
     def setup_buttons(self):
         self.button_A = DigitalInOut(board.D5)
@@ -83,6 +85,9 @@ class Display:
         self.button_C.direction = Direction.INPUT
     
     def read_buttons(self):
+        if time.time() - self.last_button_press < 1.0:
+            return
+
         if not self.button_A.value:
             if self.verbose: print("A pressed")
             if self.screen == Screen.VIEWFINDER:
@@ -108,6 +113,11 @@ class Display:
             if self.verbose: print("D pressed")
             if self.screen == Screen.MENU:
                 self.menu.increment_mode()
+
+        else:
+            return
+
+        self.last_button_press = time.time()
 
     def run(self):
         while True:
