@@ -50,6 +50,9 @@ class Menu:
         self.selected = max(self.selected - 1, 0)
         self.randomize_color()
 
+    def get_current_mode(self):
+        return self.mode_names[self.selected]
+
     def draw(self):
         self.canvas.clear_image()
         for i, mode in enumerate(self.mode_names):
