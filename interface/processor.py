@@ -52,7 +52,7 @@ class ImageProcessor:
         image.save(self.path_before)
 
     def process_image(self, mode_name: str):
-        print("\tprocessing image")
+        print(f"\tprocessing image with mode {mode_name}")
         start_time = time.time()
         with open(self.path_before, "rb") as f:
             files = {"file": f}
@@ -64,8 +64,8 @@ class ImageProcessor:
             if image_url:
                 image_response = requests.get(image_url)
                 if image_response.status_code == 200:
-                    self.result_image = Image.open(BytesIO(image_response.content))
-                    self.result_image.save(self.path_after)
+                    result_image = Image.open(BytesIO(image_response.content))
+                    result_image.save(self.path_after)
                     if self.verbose:
                         print("\tsuccesfully processed image!!")
                 else:
@@ -85,14 +85,16 @@ class ImageProcessor:
         self.canvas.clear_image()
         try:
             result_image = Image.open(self.path_after)
+            result_image = result_image.resize((self.canvas.width, self.canvas.height))
             self.canvas.display_image(result_image)
-        except:
+        except Exception as e:
+            print(f"\tboooooo an error: {e}")
             self.canvas.image_draw.text(
                 xy=(0,0),
                 text="error",
                 font=FNT,
                 fill="#ffffff",
             )
-        self.canvas.display_image()
+            self.canvas.display_image()
 
     
