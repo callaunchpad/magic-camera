@@ -61,6 +61,7 @@ class Display:
         
         self.last_button_press = 0
         self.camera_res = (self.canvas.width, self.canvas.height)
+        self.camera_img = None
 
     def setup_buttons(self):
         self.button_A = DigitalInOut(board.D5)
@@ -100,7 +101,10 @@ class Display:
             if self.screen == Screen.MENU:
                 self.screen = Screen.VIEWFINDER
             elif self.screen == Screen.VIEWFINDER:
-                self.screen = Screen.LOADING # take a picture
+                if self.camera_img is None:
+                    print("staying on viewfinder, picture not captured yet")
+                else:
+                    self.screen = Screen.LOADING # take a picture
             elif self.screen == Screen.RESULT:
                 self.screen = Screen.MENU
 
@@ -153,6 +157,7 @@ class Display:
                 return
             
     def run_viewfinder(self):
+        self.camera_img = None
         stream = io.BytesIO()
         with PiCamera() as camera:
             camera.framerate = 15
@@ -169,7 +174,6 @@ class Display:
                     return
                 
     def run_loading(self):
-        # TODO: make sure self.camera_img exists
         self.processor.set_image_target(self.camera_img)
         p1 = Process(
             target=self.processor.process_image,
