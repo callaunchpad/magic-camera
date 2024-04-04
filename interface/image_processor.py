@@ -30,17 +30,17 @@ class ImageProcessor:
             print("LOADING")
         animation_path = random.choice(self.animation_paths)
         # TODO: load animation images
+        self.canvas.clear_image()
+        self.canvas.image_draw.text(
+            xy=(0,0),
+            text="loading",
+            font=FNT,
+            fill="#ffffff",
+        )
+        self.canvas.display_image()
         for t in count(0):
             # TODO: draw frame
-            self.canvas.clear_image()
-            self.canvas.image_draw.text(
-                xy=(0,0),
-                text=f"loading {t}",
-                font=FNT,
-                fill="#ffffff",
-            )
             t += 1
-            self.canvas.display_image()
 
     def process_image(self, image: Image, mode_id: int):
         # save image to a file
