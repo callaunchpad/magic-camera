@@ -3,10 +3,12 @@ import time
 from itertools import count
 from typing import Sequence
 
-from PIL import Image
+from PIL import Image, ImageFont
 
 from canvas import Canvas
 
+
+FNT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
 
 class ImageProcessor:
 
@@ -26,13 +28,19 @@ class ImageProcessor:
     def animate_loading(self):
         if self.verbose:
             print("LOADING")
-        self.canvas.clear_image()
-        self.canvas.display_image()
         animation_path = random.choice(self.animation_paths)
         # TODO: load animation images
         for t in count(0):
             # TODO: draw frame
+            self.canvas.clear_image()
+            self.canvas.image_draw.text(
+                xy=(0,0),
+                text=f"loading {t}",
+                font=FNT,
+                fill="#ffffff",
+            )
             t += 1
+            self.canvas.display_image()
 
     def process_image(self, image: Image, mode_id: int):
         # save image to a file
@@ -45,12 +53,20 @@ class ImageProcessor:
 
     def show_result(self):
         self.canvas.clear_image()
-        self.canvas.display_image()
         if self.success:
-            # draw resulting image
-            pass
+            self.canvas.image_draw.text(
+                xy=(0,0),
+                text="success",
+                font=FNT,
+                fill="#ffffff",
+            )
         else:
-            # display error message
-            pass
+            self.canvas.image_draw.text(
+                xy=(0,0),
+                text="error",
+                font=FNT,
+                fill="#ffffff",
+            )
+        self.canvas.display_image()
 
     
