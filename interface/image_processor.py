@@ -10,10 +10,11 @@ from canvas import Canvas
 
 class ImageProcessor:
 
-    def __init__(self, canvas: Canvas, modes: Sequence[str]):
+    def __init__(self, canvas: Canvas, modes: Sequence[str], verbose=False):
         assert len(modes) > 0, "must have at least one mode"
         self.canvas = canvas
         self.modes = modes
+        self.verbose = verbose
 
         # TODO: read animation paths
         self.animation_paths = ["path1"]
@@ -23,7 +24,8 @@ class ImageProcessor:
         self.result = None
 
     def animate_loading(self):
-        print("LOADING")
+        if self.verbose:
+            print("LOADING")
         self.canvas.clear_image()
         self.canvas.display_image()
         animation_path = random.choice(self.animation_paths)
@@ -37,7 +39,8 @@ class ImageProcessor:
         # load file and send it through pipeline
         # if pipeline is successful, set self.success to True and put resulting image in self.result
         # oherwise, set self.success to False and put error message in self.message
-        print("PROCESSING YUH")
+        if self.verbose:
+            print("PROCESSING YUH")
         time.sleep(5)
 
     def show_result(self):

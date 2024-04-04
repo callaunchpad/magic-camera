@@ -51,7 +51,7 @@ class Display:
         self.screen = Screen.MENU
         self.camera_res = (self.canvas.width, self.canvas.height)
         self.menu = Menu(self.canvas, modes)
-        self.processor = ImageProcessor(self.canvas, modes)
+        self.processor = ImageProcessor(self.canvas, modes, verbose=verbose)
         
         self.verbose = verbose
         self.last_button_press = 0
