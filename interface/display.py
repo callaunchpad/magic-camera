@@ -1,4 +1,5 @@
 import io
+import requests
 import time
 from enum import Enum
 from multiprocessing import Process
@@ -10,11 +11,12 @@ from picamera import PiCamera
 from PIL import Image, ImageDraw
 
 from canvas import Canvas
-from image_processor import ImageProcessor
 from menu import Menu
+from processor import ImageProcessor
 
 
 BAUDRATE = 24000000
+BASE_URL = "http://52.25.237.192:8000/"
 
 class Screen(Enum):
     MENU = 0
@@ -25,7 +27,9 @@ class Screen(Enum):
 
 class Display:
 
-    def __init__(self, modes, verbose=False):
+    def __init__(self, verbose=False):
+        self.verbose = verbose
+
         cs_pin = DigitalInOut(board.CE0)
         dc_pin = DigitalInOut(board.D25)
         reset_pin = DigitalInOut(board.D24)
@@ -49,12 +53,15 @@ class Display:
         self.setup_buttons()
         self.canvas = Canvas(disp)
         self.screen = Screen.MENU
-        self.camera_res = (self.canvas.width, self.canvas.height)
-        self.menu = Menu(self.canvas, modes)
-        self.processor = ImageProcessor(self.canvas, modes, verbose=verbose)
         
-        self.verbose = verbose
+        mode_dict = self.get_modes()
+        mode_names = list(mode_dict.keys())
+        self.menu = Menu(self.canvas, mode_names)
+        self.processor = ImageProcessor(self.canvas, mode_dict, BASE_URL, verbose=verbose)
+        
         self.last_button_press = 0
+        self.camera_res = (self.canvas.width, self.canvas.height)
+        self.camera_img = None
 
     def setup_buttons(self):
         self.button_A = DigitalInOut(board.D5)
@@ -94,7 +101,10 @@ class Display:
             if self.screen == Screen.MENU:
                 self.screen = Screen.VIEWFINDER
             elif self.screen == Screen.VIEWFINDER:
-                self.screen = Screen.LOADING # take a picture
+                if self.camera_img is None:
+                    print("staying on viewfinder, picture not captured yet")
+                else:
+                    self.screen = Screen.LOADING # take a picture
             elif self.screen == Screen.RESULT:
                 self.screen = Screen.MENU
 
@@ -113,6 +123,16 @@ class Display:
 
         self.last_button_press = time.time()
 
+    def get_modes(self):
+        response = requests.get(BASE_URL + "endpoints")
+        if response.status_code == 200:
+            modes = response.json()
+        else:
+            modes = {"Jimmy-Inator": "jimmyinator"} # backup mode
+        if self.verbose:
+            print(f"loaded modes: {modes}")
+        return modes
+      
     def run(self):
         while True:
             if self.screen == Screen.MENU:
@@ -137,6 +157,7 @@ class Display:
                 return
             
     def run_viewfinder(self):
+        self.camera_img = None
         stream = io.BytesIO()
         with PiCamera() as camera:
             camera.framerate = 15
@@ -153,8 +174,11 @@ class Display:
                     return
                 
     def run_loading(self):
-        # TODO: make sure self.camera_img exists
-        p1 = Process(target=self.processor.process_image, args=(self.camera_img, self.menu.selected))
+        self.processor.set_image_target(self.camera_img)
+        p1 = Process(
+            target=self.processor.process_image,
+            args=(self.menu.get_current_mode(),),
+        )
         p1.start()
         
         p2 = Process(target=self.processor.animate_loading)
