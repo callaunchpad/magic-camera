@@ -6,7 +6,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 
-URL = 'http://52.25.237.192:8000/jimmyinator' # any mode api endpoint here
+URL = 'http://52.25.237.192:8000/serica' # any mode api endpoint here
 
 time_str = time.strftime("%Y%m%d-%H%M%S")
 IMAGE_PATH = f"out/in_{time_str}.png"

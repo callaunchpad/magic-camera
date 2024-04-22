@@ -11,64 +11,16 @@ from PIL import ImageFilter
 import requests
 
 #identify key features in the image by classifying objects in the image
-maskrcnn = models.detection.maskrcnn_resnet50_fpn_v2(weights='DEFAULT')
-transform = models.detection.MaskRCNN_ResNet50_FPN_V2_Weights.COCO_V1.transforms()
+input = {
+    "image": "https://replicate.delivery/pbxt/KRULC43USWlEx4ZNkXltJqvYaHpEx2uJ4IyUQPRPwYb8SzPf/view.jpg",
+    "prompt": "Write me a story based on the features in this image"
+}
 
-
-img = Image.open("resized_teampic_w_selena.jpg")
-img = img.resize((256,256))
-img_t = transform(img) 
-model_in = img_t.unsqueeze(0)
-
-maskrcnn.eval()
-model_out = maskrcnn(model_in)
-
-boxes= model_out[0]["boxes"]
-labels = model_out[0]["labels"]
-scores = model_out[0]["scores"]
-masks = model_out[0]["masks"]
-
-img_swapped1 = np.swapaxes(img_t, 0, 1)
-img_swapped2 = np.swapaxes(img_swapped1, 1, 2)
-
-tot_labels = labels.size
-word_list = [models.detection.MaskRCNN_ResNet50_FPN_V2_Weights.COCO_V1.meta["categories"][i] for i in labels[:4]]
-print(word_list)
-
-#above generates a list of objects in to feed into a model to create a "story" about what the picture sees
-
-from openai import OpenAI
-
-def concatenate_strings(string_list):
-    concatenated_string = ' '.join(string_list)
-    return concatenated_string
-
-
-descriptor_strings = concatenate_strings(word_list)
-prompt = "You are in charge of making a one setence descriptor of a background given the following words. For example, given the words 'dog', 'field', and 'house' a suitable descriptor of a background might be 'a doghouse sits atop an open field under an clear blue day'. Another example is given the words 'trees' 'person' and 'sky' a suitable descriptor of a background might be 'a dense forest with green foliage making way for a sky'. Your list of words here is " + descriptor_strings + " please make a background descriptor from this"
-
-
-client = OpenAI(
-    # This is the default and can be omitted
-    api_key=os.getenv("OPENAI_API_KEY"),
+output = replicate.run(
+    "yorickvp/llava-13b:b5f6212d032508382d61ff00469ddda3e32fd8a0e75dc39d8a4191bb742157fb",
+    input=input
 )
-
-chat_completion = client.chat.completions.create(
-    messages=[
-        {
-            "role": "user",
-            "content":prompt,
-        }
-    ],
-    model="gpt-4",
-)
-
-#extract the chat completition
-completion_message = chat_completion.choices[0].message.content
-print(completion_message)
-
-
-
+print("".join(output))
 
 
 

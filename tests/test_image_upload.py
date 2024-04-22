@@ -2,7 +2,7 @@ import requests
 from PIL import Image
 from io import BytesIO
 
-url = 'http://52.25.237.192:8000/jimmyinator' # any mode api endpoint here
+url = 'http://52.25.237.192:8000/serica' # any mode api endpoint here
 
 # The path to the file you want to upload
 file_path = 'out/test.png'
