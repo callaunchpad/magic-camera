@@ -1,1 +1,6 @@
-ericaaudio/cog.yaml
+*/.cog/
+*/__pycache__/
+out/
+*/.env/
+ericaaudio/predict.py
+ericaaudio/ericaaudio.py
