@@ -1,7 +1,12 @@
 import torch
 from diffusers import StableDiffusionGLIGENPipeline
-from cog import BasePredictor, Input, Path
+from diffusers.utils import load_image
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 from PIL import Image
+import numpy as np
+
+from cog import BasePredictor, Input, Path
 from openai import OpenAI
 import os
 import base64
@@ -44,8 +49,8 @@ class Predictor(BasePredictor):
       model_id, variant="fp16", torch_dtype=torch.float16
     )
     self.pipe.to("cuda")
-    os.getenv("OPENAI_API_KEY") # TODO
-    self.client = OpenAI()
+    #os.getenv("OPENAI_API_KEY") # TODO
+    #self.client = OpenAI()
 
   def gpt_prompt_boxes(self, description, cropped_img):
     buffered = BytesIO()
@@ -114,7 +119,7 @@ class Predictor(BasePredictor):
   # The arguments and types the model takes as input
   def predict(self,
         image: Path = Input("file path"), 
-        num_inference_steps: int = 10,
+        num_inference_steps: int = 50,
   ) -> Path:
     """Run a single prediction on the model"""
 
@@ -154,26 +159,28 @@ class Predictor(BasePredictor):
     reset_cls_test(predictor.model, classifier, num_classes)
 
     im = cv2.imread(image)
-    # Run model and show results
-    outputs = predictor(im)
-    v = Visualizer(im[:, :, ::-1], metadata)
-    out = v.draw_instance_predictions(outputs["instances"].to("cpu"))
 
-    #print([metadata.thing_classes[x] for x in outputs["instances"].pred_classes.cpu().tolist()]) # class names
-    #print(outputs["instances"].scores)
-    #print(outputs["instances"].pred_boxes.tensor.tolist())
+    # Run detic model
+    height, width, channels = im.shape
+    outputs = predictor(im)
     phrases = [metadata.thing_classes[x] for x in outputs["instances"].pred_classes.cpu().tolist()]
-    boxes = outputs["instances"].pred_boxes.tensor.tolist()
+    boxes_uncut = outputs["instances"].pred_boxes.tensor.tolist()
+    boxes = []
+    for box_uncut in boxes_uncut:
+      box = [box_uncut[0]/width, box_uncut[1]/height, box_uncut[2]/width, box_uncut[3]/height]
+      boxes.append(box)
+    prompt = "a cartoon scene"
 
     #--- RECONSTRUCTION PHASE ---#
-    processed_image = preprocess(image)
+    #processed_image = preprocess(image)
     # TODO take in processed_image
-    boxes = [[0.1387, 0.2051, 0.4277, 0.7090], [0.4980, 0.4355, 0.8516, 0.7266]]
-    phrases = ["sign", "mango"]
-    prompt, gpt_phrases = self.create_prompt(processed_image, boxes, phrases) # TODO
+    #boxes = [[0.1387, 0.2051, 0.4277, 0.7090], [0.4980, 0.4355, 0.8516, 0.7266]]
+    #phrases = ["sign", "mango"]
+    #prompt, gpt_phrases = self.create_prompt(processed_image, boxes, phrases) # TODO
+
     output = self.pipe(
-      prompt,
-      gligen_phrases=gpt_phrases,
+      prompt=prompt,
+      gligen_phrases=phrases,
       gligen_boxes=boxes,
       gligen_scheduled_sampling_beta=1,
       output_type="pil",
