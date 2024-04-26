@@ -123,8 +123,29 @@ class Display:
 
         self.last_button_press = time.time()
 
+<<<<<<< HEAD
     def get_modes(self):
         response = requests.get(BASE_URL + "endpoints")
+=======
+    # TODO(eshaan): not the best style, fix later
+    def _make_request_with_retries_(self, url, max_retries=1000, delay=5):
+        attempts = 0
+        while attempts < max_retries:
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                return response
+            except requests.exceptions.RequestException as e:
+                print("request failed, retrying")
+                time.sleep(delay)
+                attempts += 1
+            return None
+
+    def get_modes(self):
+        request_url = BASE_URL + "endpoints"
+        self._make_request_with_retries_(request_url)
+        response = requests.get(request_url)
+>>>>>>> bdc4fed6bfd8f58a81fa8621b475f2f8f946fdcb
         if response.status_code == 200:
             modes = response.json()
         else:
