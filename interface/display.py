@@ -141,6 +141,25 @@ class Display:
         request_url = BASE_URL + "endpoints"
         self._make_request_with_retries_(request_url)
         response = requests.get(request_url)
+    
+    # TODO(eshaan): not the best style, fix later
+    def _make_request_with_retries_(self, url, max_retries=1000, delay=5):
+        attempts = 0
+        while attempts < max_retries:
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
+                return response
+            except requests.exceptions.RequestException as e:
+                print("request failed, retrying")
+                time.sleep(delay)
+                attempts += 1
+            return None
+
+    def get_modes(self):
+        request_url = BASE_URL + "endpoints"
+        self._make_request_with_retries_(request_url)
+        response = requests.get(request_url)
         if response.status_code == 200:
             modes = response.json()
         else:
@@ -177,19 +196,21 @@ class Display:
         stream = io.BytesIO()
         with PiCamera() as camera:
             camera.framerate = 15
-            # camera.resolution = (self.width, self.height)
-            camera.resolution = self.camera_res
+            camera.resolution = (1024, 1024)
+            # camera.resolution = self.camera_res
             for _ in camera.capture_continuous(stream, format='jpeg'): 
                 self.read_buttons()
                 if self.screen == Screen.VIEWFINDER:
                     self.camera_img = Image.open(stream)
-                    self.canvas.display_image(self.camera_img)
+                    output_img = self.camera_img.resize([self.camera_res[0], self.camera_res[1]])
+                    self.canvas.display_image(output_img)
                     stream.seek(0)
                     stream.truncate()
                 else:
                     return
                 
     def run_loading(self):
+        self.screen = Screen.VIEWFINDER
         self.processor.set_image_target(self.camera_img)
         p1 = Process(
             target=self.processor.process_image,
@@ -197,11 +218,11 @@ class Display:
         )
         p1.start()
         
-        p2 = Process(target=self.processor.animate_loading)
-        p2.start()
+        #p2 = Process(target=self.processor.animate_loading)
+        #p2.start()
 
-        p1.join()
-        self.screen = Screen.RESULT
+        #p1.join()
+        #self.screen = Screen.RESULT
 
     def run_result(self):
         while True:
