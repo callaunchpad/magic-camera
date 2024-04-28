@@ -33,12 +33,19 @@ class ImageProcessor:
     def animate_loading(self):
         animation_path = random.choice(self.animation_paths)
         # TODO: load animation images
+<<<<<<< HEAD
+        self.canvas.clear_image()
+        self.canvas.image_draw.text(
+            xy=(50,100),
+            text="loading...",
+=======
         texts = ["magic in progress", "do you like hippos?", "least fav LP mem?", "shrooooms", "hehehe"]
         self.canvas.clear_image()
         randText = texts[random.randrange(len(texts))]
         self.canvas.image_draw.text(
             xy=(50,100),
             text=randText,
+>>>>>>> bdc4fed6bfd8f58a81fa8621b475f2f8f946fdcb
             font=FNT,
             fill="#ffffff",
         )

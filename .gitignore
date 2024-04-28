@@ -1,6 +1,10 @@
 */.cog/
 */__pycache__/
+<<<<<<< HEAD
+out/
+=======
 out/
 */.env/
 ericaaudio/predict.py
 ericaaudio/ericaaudio.py
+>>>>>>> bdc4fed6bfd8f58a81fa8621b475f2f8f946fdcb
