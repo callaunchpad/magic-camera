@@ -69,7 +69,7 @@ class Menu:
                 fill="#ffffff",
             )
 
-            if self.selected == i:
+            if (self.selected - self.scroll_index) == i:
                 self.canvas.image_draw.polygon(
                     xy=((LEFT_PADDING, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN) + POINTER_Y_MARGIN),
                         (LEFT_PADDING, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN) + POINTER_Y_MARGIN + POINTER_HEIGHT),
