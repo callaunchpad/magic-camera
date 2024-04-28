@@ -52,4 +52,4 @@ build:
   #   - "echo another command if needed"
 
 # predict.py defines how predictions are run on your model
-predict: "predict.py:Predictor"
+predict: "predictllava.py:Predictor"
