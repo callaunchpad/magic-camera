@@ -15,6 +15,7 @@ LEFT_PADDING = 10
 ITEM_HEIGHT = 40
 ITEM_X_MARGIN = 15
 ITEM_Y_MARGIN = 5
+NUM_ITEMS = 5
 
 POINTER_HEIGHT = 20
 POINTER_WIDTH = 15
@@ -37,25 +38,30 @@ class Menu:
         self.mode_names = mode_names
 
         self.selected = 0
+        self.scroll_index = 0
         self.randomize_color()
 
     def randomize_color(self):
         self.color = random.choice(COLORS)
 
     def increment_mode(self):
+        self.randomize_color()
         self.selected = min(self.selected + 1, len(self.mode_names) - 1)
-        self.randomize_color()
-
+        if self.selected >= self.scroll_index + NUM_ITEMS:
+            self.scroll_index += 1
+        
     def decrement_mode(self):
-        self.selected = max(self.selected - 1, 0)
         self.randomize_color()
+        self.selected = max(self.selected - 1, 0)
+        if self.selected < self.scroll_index:
+            self.scroll_index -= 1
 
     def get_current_mode(self):
         return self.mode_names[self.selected]
 
     def draw(self):
         self.canvas.clear_image()
-        for i, mode in enumerate(self.mode_names):
+        for i, mode in enumerate(self.mode_names[self.scroll_index : self.scroll_index + NUM_ITEMS]):
             self.canvas.image_draw.text(
                 xy=(LEFT_PADDING + POINTER_WIDTH + ITEM_X_MARGIN, TOP_PADDING + i * (ITEM_HEIGHT + ITEM_Y_MARGIN)),
                 text=mode,
