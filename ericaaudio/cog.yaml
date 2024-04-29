@@ -9,7 +9,6 @@ build:
     - "libgl1-mesa-glx"
     - "libegl1-mesa-dev"
     - "libglib2.0-0"
-    - "ffmpeg"
     - "libglvnd0"
     - "libgl1"
     - "libglx0"
@@ -21,6 +20,7 @@ build:
     - "libgles2-mesa-dev"
     - "libsm6"
     - "libxext6"
+    - "ffmpeg"
     - "build-essential"
 
   # a list of ubuntu apt packages to install
@@ -38,7 +38,7 @@ build:
   - "pillow==10.2.0"
   - "openai==1.23.5"
   - "audiocraft==1.2.0"
-  - "ffmpeg==1.4"
+  - "ffmpeg-python"
 
 
   # a list of packages in the format <package-name>==<version>
