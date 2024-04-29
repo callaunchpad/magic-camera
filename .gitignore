@@ -1,6 +1,4 @@
 */.cog/
 */__pycache__/
 out/
-*/.env/
-ericaaudio/predict.py
-ericaaudio/ericaaudio.py
+ericaaudio/.env/
