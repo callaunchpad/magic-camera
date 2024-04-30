@@ -14,8 +14,7 @@ from openai import OpenAI
 import replicate
 from PIL import ImageFilter
 import requests
-os.environ["REPLICATE_API_TOKEN"] = "r8_8ISCswIcpgDRW1NWSkUgfMhLAK2RrMY4TlwiC"
-
+replicate_key = os.getenv("REPLICATE_API_TOKEN")
 
 
 class Predictor(BasePredictor):
