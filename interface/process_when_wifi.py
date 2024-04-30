@@ -1,10 +1,9 @@
-# UNTESTED CODE!!!
 import subprocess
 import time
 import requests
 import os
 import concurrent.futures
-
+import shutil
 
 BASE_URL = "http://52.25.237.192:8000/"
 PROCESS_FILEPATH = 'to_process'
