@@ -10,6 +10,7 @@ import shutil
 from PIL import Image, ImageFont
 
 from canvas import Canvas
+from process_when_wifi import check_wifi
 
 
 FNT = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
@@ -60,17 +61,20 @@ class ImageProcessor:
         start_time = time.time()
         with open(self.path_before, "rb") as f:
             files = {"file": f}
-            try:
-                response = requests.post(self.base_url + self.mode_dict[mode_name], files=files)
-                response.raise_for_status()
-            except requests.exceptions.RequestException as e:
-                print(f"\tfailed to upload image: {e}")
-                # save path in a processing directory
-                os.makedirs("to_process", exist_ok=True)
-                # move `self.path_before` to `to_process`
-                shutil.move(self.path_before, "to_process")
-                return
+            if check_wifi():
+                try:
+                    response = requests.post(self.base_url + self.mode_dict[mode_name], files=files)
+                    response.raise_for_status()
+                    return
+                except requests.exceptions.RequestException as e:
+                    print(f"\tfailed to upload image: {e}")
+            # save path in a processing directory
+            os.makedirs("to_process", exist_ok=True)
+            # move `self.path_before` to `to_process`
+            shutil.move(self.path_before, "to_process")
+            return
 
+        """
         if response.status_code == 200:
             response_json = response.json()
             image_url = response_json.get("url")
@@ -93,6 +97,7 @@ class ImageProcessor:
         
         if self.verbose:
             print(f"\tfinished processing after {(time.time()-start_time)/60:.2f} minutes")
+        """
 
     def show_result(self):
         self.canvas.clear_image()

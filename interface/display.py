@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw
 from canvas import Canvas
 from menu import Menu
 from processor import ImageProcessor
-
+from process_when_wifi import check_wifi
 
 BAUDRATE = 24000000
 BASE_URL = "http://52.25.237.192:8000/"
@@ -127,21 +127,23 @@ class Display:
     def _make_request_with_retries_(self, url, max_retries=5, delay=5):
         attempts = max_retries
         while attempts > 0:
-            try:
-                response = requests.get(url)
-                response.raise_for_status()
-                return response
-            except requests.exceptions.RequestException as e:
-                print("request failed, retrying")
-                time.sleep(delay)
-                attempts -= 1
-            return {'status_code': 'error'}
+            if check_wifi():
+                print("wifi is connected")
+                try:
+                    response = requests.get(url)
+                    response.raise_for_status()
+                    return response
+                except requests.exceptions.RequestException as e:
+                    print("request failed, retrying")
+            time.sleep(delay)
+            attempts -= 1
+            return None
 
     def get_modes(self):
         request_url = BASE_URL + "endpoints"
-        self._make_request_with_retries_(request_url)
-        response = requests.get(request_url)
-        if response.status_code == 200:
+        response = self._make_request_with_retries_(request_url)
+        # response = requests.get(request_url)
+        if response and response.status_code == 200:
             modes = response.json()
         else:
             modes = {"StyleBlend": "styleblend",
@@ -199,7 +201,7 @@ class Display:
                 
     def run_loading(self):
         self.screen = Screen.VIEWFINDER
-        self.processor.set_image_target(self.camera_img)
+        self.processor.set_image_target(self.camera_img, self.menu.get_current_mode())
         p1 = Process(
             target=self.processor.process_image,
             args=(self.menu.get_current_mode(),),
