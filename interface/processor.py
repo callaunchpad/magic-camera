@@ -4,6 +4,8 @@ import time
 from io import BytesIO
 from itertools import count
 from typing import Sequence
+import os
+import shutil
 
 from PIL import Image, ImageFont
 
@@ -46,10 +48,11 @@ class ImageProcessor:
             # TODO: draw frame
             t += 1
 
-    def set_image_target(self, image: Image):
+    def set_image_target(self, image: Image, mode_name: str):
         time_str = time.strftime("%Y%m%d-%H%M%S")
-        self.path_before = f"out/{time_str}_before.png"
-        self.path_after = f"out/{time_str}_after.png"
+        mode_endpoint_name = self.mode_dict[mode_name]
+        self.path_before = f"out/{time_str}_{mode_endpoint_name}_before.png"
+        self.path_after = f"out/{time_str}_{mode_endpoint_name}_after.png"
         image.save(self.path_before)
 
     def process_image(self, mode_name: str):
@@ -57,7 +60,16 @@ class ImageProcessor:
         start_time = time.time()
         with open(self.path_before, "rb") as f:
             files = {"file": f}
-            response = requests.post(self.base_url + self.mode_dict[mode_name], files=files)
+            try:
+                response = requests.post(self.base_url + self.mode_dict[mode_name], files=files)
+                response.raise_for_status()
+            except requests.exceptions.RequestException as e:
+                print(f"\tfailed to upload image: {e}")
+                # save path in a processing directory
+                os.makedirs("to_process", exist_ok=True)
+                # move `self.path_before` to `to_process`
+                shutil.move(self.path_before, "to_process")
+                return
 
         if response.status_code == 200:
             response_json = response.json()

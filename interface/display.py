@@ -125,7 +125,7 @@ class Display:
 
     # TODO(eshaan): not the best style, fix later
     def _make_request_with_retries_(self, url, max_retries=1000, delay=5):
-        attempts = 0
+        attempts = 5
         while attempts < max_retries:
             try:
                 response = requests.get(url)
@@ -135,7 +135,7 @@ class Display:
                 print("request failed, retrying")
                 time.sleep(delay)
                 attempts += 1
-            return None
+            return {'status_code': 'error'}
 
     def get_modes(self):
         request_url = BASE_URL + "endpoints"
@@ -144,7 +144,14 @@ class Display:
         if response.status_code == 200:
             modes = response.json()
         else:
-            modes = {"Jimmy-Inator": "jimmyinator"} # backup mode
+            modes = {"StyleBlend": "styleblend",
+                "Jimmy-Inator": "jimmyinator",
+                "hehe": "hehe",
+                "IDKWTQO": "idkwtqo",
+                "serica": "serica",
+                "StyleSwirl": "sannuv",
+                "Eyeful": "eyeful",
+                "fAIshbowlML": "fishbowl"}
         if self.verbose:
             print(f"loaded modes: {modes}")
         return modes
@@ -176,7 +183,7 @@ class Display:
         self.camera_img = None
         stream = io.BytesIO()
         with PiCamera() as camera:
-            camera.framerate = 15
+            camera.framerate = 5
             camera.resolution = (1024, 1024)
             # camera.resolution = self.camera_res
             for _ in camera.capture_continuous(stream, format='jpeg'): 
