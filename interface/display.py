@@ -124,9 +124,9 @@ class Display:
         self.last_button_press = time.time()
 
     # TODO(eshaan): not the best style, fix later
-    def _make_request_with_retries_(self, url, max_retries=1000, delay=5):
-        attempts = 5
-        while attempts < max_retries:
+    def _make_request_with_retries_(self, url, max_retries=5, delay=5):
+        attempts = max_retries
+        while attempts > 0:
             try:
                 response = requests.get(url)
                 response.raise_for_status()
@@ -134,7 +134,7 @@ class Display:
             except requests.exceptions.RequestException as e:
                 print("request failed, retrying")
                 time.sleep(delay)
-                attempts += 1
+                attempts -= 1
             return {'status_code': 'error'}
 
     def get_modes(self):
