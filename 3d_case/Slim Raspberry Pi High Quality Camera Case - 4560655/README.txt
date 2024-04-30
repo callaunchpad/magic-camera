@@ -1,0 +1,1 @@
+Slim Raspberry Pi High Quality Camera Case by sputniC_42 on Thingiverse: https://www.thingiverse.com/thing:4560655
